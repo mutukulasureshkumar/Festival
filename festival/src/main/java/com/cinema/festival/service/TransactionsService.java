@@ -51,7 +51,7 @@ public class TransactionsService {
 			SimpleDateFormat sdf = new SimpleDateFormat("HH");
 			sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 			int current_time = Integer.parseInt(sdf.format(new Date().getTime()));
-			System.out.println("****************************************************************************************** time :: "+ current_time);
+			System.out.println("***************************************************************************************** time :: "+ current_time);
 			if(current_time >= 14)
 				throw new IllegalAccessError("Guess is not allowed after 2 PM !!");
 		}
