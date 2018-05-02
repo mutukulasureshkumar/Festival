@@ -22,7 +22,7 @@ public class Schedular {
 	@Scheduled(cron="0 00 13 * * *", zone="Asia/Calcutta")
 	public void sendAlertTL(){
 		try{
-			System.out.println("******************ALERT Schedular Triggered******************* :: "+ new Date());
+			System.out.println("******************ALERT Schedular Triggered******************** :: "+ new Date());
 			HashMap<String, String> contacts = new HashMap<String, String>();
 			contacts.put("Bharat", "+919885958003");
 			contacts.put("Mahesh", "+917769040088");
