@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,16 @@ public class MoviesController {
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ArrayList<Movies> getAllMovies(){
 		return moviesService.getAllMoviesFromTodaay();
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Movies add(@RequestBody Movies movies){
+		return moviesService.save(movies);
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE)
+	public void delete(@RequestBody Movies movies){
+		moviesService.delete(movies);
 	}
 
 	@RequestMapping(value = "/load", method = RequestMethod.GET)

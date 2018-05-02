@@ -14,4 +14,6 @@ public interface TransactionsRepository  extends JpaRepository<Transactions, Int
 	public List<Transactions> findByPatronId(int patronId);
 	public Transactions findByPatronIdAndMovieId(int patronId, int movieId);
 	public List<Transactions> findAllByOrderByTransactionsIdAsc();
+	public List<Transactions> findByPatronIdAndDateTimeLessThan(int patronId,String dateTime);
+	public void deleteByMovieId(int movie_id);
 }

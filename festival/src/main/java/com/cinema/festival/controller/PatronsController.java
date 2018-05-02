@@ -44,4 +44,9 @@ public class PatronsController {
 	public void delete(@RequestBody  Patrons patron){
 		patronService.deletePatron(patron);
 	}
+	
+	@RequestMapping(value = "/checkbalnce", method = RequestMethod.GET)
+	public double checkBalance(){
+		return patronService.checkBalance();
+	}
 }

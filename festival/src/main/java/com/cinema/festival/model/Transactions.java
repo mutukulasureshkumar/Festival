@@ -15,13 +15,13 @@ public class Transactions {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO, generator="my_entity_seq_gen")
 	@SequenceGenerator(name="my_entity_seq_gen", sequenceName="MY_ENTITY_SEQ")	
-	private int transactionsId;
+	private long transactionsId;
 	private int patronId;
 	private int movieId;
 	private String favorite;
 	private int ticket;
 	private double balance;
-	private String date_time;
+	private String dateTime;
 	@Transient
 	private String username;
 	@Transient
@@ -29,10 +29,10 @@ public class Transactions {
 	
 	private String award;
 	
-	public int getTransactionsId() {
+	public long getTransactionsId() {
 		return transactionsId;
 	}
-	public void setTransactionsId(int transactionId) {
+	public void setTransactionsId(long transactionId) {
 		this.transactionsId = transactionId;
 	}
 	public int getPatronId() {
@@ -66,10 +66,10 @@ public class Transactions {
 		this.balance = balance;
 	}
 	public String getDate_time() {
-		return date_time;
+		return dateTime;
 	}
 	public void setDate_time(String date_time) {
-		this.date_time = date_time;
+		this.dateTime = date_time;
 	}
 	public String getUsername() {
 		return username;
@@ -97,6 +97,6 @@ public class Transactions {
 				"favorite :: "+favorite+"\n"+
 				"ticket :: "+ticket+"\n"+
 				"balance :: "+balance+"\n"+
-				"date_time :: "+date_time;
+				"date_time :: "+dateTime;
 	}
 }

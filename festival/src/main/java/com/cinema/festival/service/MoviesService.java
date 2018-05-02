@@ -36,4 +36,8 @@ public class MoviesService {
 	public ArrayList<Movies> getByDate(String date){
 		return (ArrayList<Movies>) moviesRepository.findByDate(date);
 	}
+	
+	public void delete(Movies movie){
+		moviesRepository.delete(movie);;
+	}
 }

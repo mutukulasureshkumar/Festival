@@ -5,12 +5,14 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cinema.festival.model.Balance;
 import com.cinema.festival.model.Results;
 import com.cinema.festival.model.Transactions;
 import com.cinema.festival.service.TransactionsService;
@@ -31,7 +33,7 @@ public class TransactionsController {
 	@RequestMapping(method = RequestMethod.POST)
 	public HashMap<Integer, ArrayList<Results>> save(@RequestBody  Transactions transactions){
 		System.out.println("***LOG INFO*** :: "+transactions.toString());
-		return transactionsService.save(transactions);
+		return transactionsService.save(transactions, false);
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT)
@@ -70,8 +72,29 @@ public class TransactionsController {
 		transactionsService.deleteAll();
 	}
 	
+	@RequestMapping(value = "/id/{id}",  method = RequestMethod.DELETE)
+	public void delete(@PathVariable("id") int id){
+		transactionsService.deleteAll(id);
+	}
+	
 	@RequestMapping(value = "/temp" ,method = RequestMethod.PUT)
 	public void getCurrentTransactions1(@RequestBody Transactions results){
 		transactionsService.up1(results);
+	}
+	
+	@RequestMapping(value = "/alert" ,method = RequestMethod.GET)
+	public void alert(){
+		//Schedular schedular = new Schedular();
+		//schedular.sendAlertM9();
+	}
+	
+	@RequestMapping(value = "/checkbalnce", method = RequestMethod.GET)
+	public HashMap<String, ArrayList<Balance>> checkBalance(){
+		return transactionsService.getBalnaceByUsers();
+	}
+	
+	@RequestMapping(value = "/balancebymatch", method = RequestMethod.GET)
+	public HashMap<String, Double> checkBalanceByMatch(){
+		return transactionsService.getBalnaceByMatch();
 	}
 }

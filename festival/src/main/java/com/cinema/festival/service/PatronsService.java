@@ -1,15 +1,18 @@
 package com.cinema.festival.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cinema.festival.model.Patrons;
 import com.cinema.festival.repository.PatronsRepository;
 import com.cinema.festival.util.Util;
 
 @Service
+@Transactional
 public class PatronsService {
 	
 	@Autowired
@@ -19,7 +22,6 @@ public class PatronsService {
 		String date = Util.getDate("dd/M/yyyy  hh:mm:ss");
 		patrons.setDate_time(date);
 		patrons.setStatus("ACTIVE");
-		patrons.setBalance(0);
 		return patronRepository.save(patrons);
 	}
 	
@@ -41,5 +43,14 @@ public class PatronsService {
 	
 	public void deletePatron(Patrons patron){
 		patronRepository.delete(patron);
+	}
+	
+	public double checkBalance(){
+		double sum=0;
+		ArrayList<Patrons> patrons = (ArrayList<Patrons>) patronRepository.findAll();
+		for(Patrons patron:patrons){
+			sum=sum+patron.getBalance();
+		}
+		return sum;
 	}
 }
