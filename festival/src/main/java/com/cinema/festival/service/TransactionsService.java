@@ -34,6 +34,7 @@ public class TransactionsService {
 	@Autowired
 	private MoviesService moviesService;
 
+	@Transactional
 	public HashMap<Integer, ArrayList<Results>> save(Transactions transactions, boolean defaultGuess) {
 		Patrons patron = null;
 		Ratio ratio = null;
@@ -349,12 +350,14 @@ public class TransactionsService {
 		return sum;
 	}
 	
-	public HashMap<String, ArrayList<Balance>> getBalnaceByUsers() {
+	public HashMap<String, ArrayList<Balance>> getBalnaceByUsers(int movieId) {
 		HashMap<String, ArrayList<Balance>> res = new HashMap<String, ArrayList<Balance>>();
 		ArrayList<Patrons> patrons = (ArrayList<Patrons>) patronsService.getAll();
 		double sum=0;
+		ArrayList<Integer> ids = new ArrayList<Integer>();
+		ids.add(movieId);
 		for (Patrons patron : patrons) {
-			ArrayList<Transactions> trans = (ArrayList<Transactions>) transactionsRepository.findByPatronIdAndDateTimeLessThan(patron.getPatronId(), "17/4/2018");
+			ArrayList<Transactions> trans = (ArrayList<Transactions>) transactionsRepository.findByPatronIdAndMovieIdNotIn(patron.getPatronId(), ids);
 			ArrayList<Balance> balList = new ArrayList<Balance>();
 			System.out.println("******* :: "+patron.getFull_name()+" :: ***********");
 			double ind=0;
@@ -371,10 +374,10 @@ public class TransactionsService {
 				balList.add(bal);
 		
 			}
-			System.out.println("******* trans :: "+ind+" :: *********** pat ::"+patron.getBalance());
+			System.out.println("******* Transactions Balnce :: "+ind+" :: *********** Patron Balance ::"+patron.getBalance());
 			patron.setBalance(ind);
 			Patrons p=patronsService.save(patron);
-			System.out.println("******* trans :: "+ind+" :: *********** pat ::"+p.getBalance());
+			System.out.println("******* After update Patron Balance ::"+p.getBalance());
 			res.put(patron.getFull_name(),balList);
 		}
 		Balance bl=new Balance();
@@ -382,7 +385,7 @@ public class TransactionsService {
 		ArrayList<Balance> b = new ArrayList<Balance>();
 		b.add(bl);
 		res.put("Total", b);
-		System.out.println("******* :: Total :: ***********");
+		System.out.println("******* :: Total Patrons Balance :: ***********");
 		System.out.println("******* :: "+sum+" :: ***********");
 		return res;
 	}

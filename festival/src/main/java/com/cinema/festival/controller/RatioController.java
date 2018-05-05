@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,5 +28,10 @@ public class RatioController {
 	@RequestMapping(value = "/bymovie", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Ratio getRatioByMovie(@RequestParam int movieId){
 		return ratioService.getRatioByMovieId(movieId);
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Ratio getRatioByMovie(@RequestBody Ratio ratio){
+		return ratioService.save(ratio);
 	}
 }

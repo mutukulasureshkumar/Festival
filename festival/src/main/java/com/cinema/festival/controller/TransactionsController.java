@@ -88,9 +88,9 @@ public class TransactionsController {
 		//schedular.sendAlertM9();
 	}
 	
-	@RequestMapping(value = "/checkbalnce", method = RequestMethod.GET)
-	public HashMap<String, ArrayList<Balance>> checkBalance(){
-		return transactionsService.getBalnaceByUsers();
+	@RequestMapping(value = "/checkbalance/{movieid}", method = RequestMethod.GET)
+	public HashMap<String, ArrayList<Balance>> checkBalance(@PathVariable("movieid") int movieid){
+		return transactionsService.getBalnaceByUsers(movieid);
 	}
 	
 	@RequestMapping(value = "/balancebymatch", method = RequestMethod.GET)

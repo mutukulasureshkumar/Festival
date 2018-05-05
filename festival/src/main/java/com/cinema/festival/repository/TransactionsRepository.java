@@ -1,5 +1,6 @@
 package com.cinema.festival.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,6 @@ public interface TransactionsRepository  extends JpaRepository<Transactions, Int
 	public Transactions findByPatronIdAndMovieId(int patronId, int movieId);
 	public List<Transactions> findAllByOrderByTransactionsIdAsc();
 	public List<Transactions> findByPatronIdAndDateTimeLessThan(int patronId,String dateTime);
+	public List<Transactions> findByPatronIdAndMovieIdNotIn(int patronId,Collection<Integer> ids);
 	public void deleteByMovieId(int movie_id);
 }

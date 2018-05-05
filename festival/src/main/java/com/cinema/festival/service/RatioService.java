@@ -35,5 +35,4 @@ public class RatioService {
 	public ArrayList<Ratio> getAllRatios(){
 		return (ArrayList<Ratio>) ratioRepository.findAll();
 	}
-
 }
