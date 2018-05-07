@@ -161,6 +161,7 @@ public class TransactionsService {
 		}
 	}
 
+	@Transactional
 	public HashMap<String, ArrayList<Results>> update(Transactions results) {
 		Patrons patron = null;
 		Ratio ratio = null;
@@ -411,5 +412,9 @@ public class TransactionsService {
 			res.put(key, sum);
 		}
 		return res;
+	}
+	
+	public List<Transactions> findByAwardIsNull(){
+		return transactionsRepository.findByAwardIsNull();
 	}
 }

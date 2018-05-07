@@ -18,4 +18,5 @@ public interface TransactionsRepository  extends JpaRepository<Transactions, Int
 	public List<Transactions> findByPatronIdAndDateTimeLessThan(int patronId,String dateTime);
 	public List<Transactions> findByPatronIdAndMovieIdNotIn(int patronId,Collection<Integer> ids);
 	public void deleteByMovieId(int movie_id);
+	public List<Transactions> findByAwardIsNull();
 }
