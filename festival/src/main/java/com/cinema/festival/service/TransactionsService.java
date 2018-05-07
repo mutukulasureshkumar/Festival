@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,6 +162,7 @@ public class TransactionsService {
 		}
 	}
 
+	@Transactional
 	public HashMap<String, ArrayList<Results>> update(Transactions results) {
 		Patrons patron = null;
 		Ratio ratio = null;
@@ -230,6 +232,9 @@ public class TransactionsService {
 	public HashMap<Integer, ArrayList<Results>> getCurrentDateMovies() {
 		HashMap<Integer, ArrayList<Results>> res = new HashMap<Integer, ArrayList<Results>>();
 		String date = Util.getDate("dd/M/yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH");
+		sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+		int current_time = Integer.parseInt(sdf.format(new Date().getTime()));
 		ArrayList<Movies> movieList = moviesService.getByDate(date);
 		for (Movies movie : movieList) {
 			ArrayList<Results> resList = new ArrayList<>();
@@ -251,6 +256,17 @@ public class TransactionsService {
 				results.setHeroinRatio(ratio.getHeroinRatio());
 				results.setHeroTotalAmount(ratio.getHeroTotalTickets());
 				results.setHeroinTotalAmount(ratio.getHeroinTotalTickets());
+				System.out.println("************* current_time ************* :: "+ current_time);
+				if(current_time <= 13){
+					System.out.println("************* inside ************* (current_time <= 13) :: "+ (current_time <= 14));
+						results.setFavorite("");
+						results.setTicket(0);
+						results.setBalance(0);
+						results.setHeroRatio(0);
+						results.setHeroinRatio(0);
+						results.setHeroTotalAmount(0);
+						results.setHeroinTotalAmount(0);
+				}
 				resList.add(results);
 			}
 			res.put(movie.getMovieId(), resList);
@@ -259,6 +275,12 @@ public class TransactionsService {
 	}
 
 	public HashMap<String, ArrayList<Results>> getAllTransactionsByUsers() {
+		
+		String current_date = Util.getDate("dd/M/yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("HH");
+		sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+		int current_time = Integer.parseInt(sdf.format(new Date().getTime()));
+		
 		HashMap<String, ArrayList<Results>> res = new HashMap<String, ArrayList<Results>>();
 		ArrayList<Patrons> patrons = (ArrayList<Patrons>) patronsService.getAll();
 		for (Patrons patron : patrons) {
@@ -296,6 +318,20 @@ public class TransactionsService {
 				results.setHeroinRatio(ratio.getHeroinRatio());
 				results.setHeroTotalAmount(ratio.getHeroTotalTickets());
 				results.setHeroinTotalAmount(ratio.getHeroinTotalTickets());
+				System.out.println("************* current_date ************* :: "+ current_date +" :: ************* :"+ (current_date.trim().equals(movie.getDate().trim())));
+				if(current_date.trim().equals(movie.getDate().trim())){
+					System.out.println("************* current_time ************* :: "+ current_time);
+					if(current_time <= 13){
+						System.out.println("************* inside ************* (current_time <= 13) :: "+ (current_time <= 14));
+						results.setFavorite("");
+						results.setTicket(0);
+						results.setBalance(0);
+						results.setHeroRatio(0);
+						results.setHeroinRatio(0);
+						results.setHeroTotalAmount(0);
+						results.setHeroinTotalAmount(0);
+					}
+				}
 				resultsList.add(results);
 			}
 			res.put(patron.getFull_name(), resultsList);
@@ -317,6 +353,8 @@ public class TransactionsService {
 		try{
 			ArrayList<Movies> movies = moviesService.getByDate(Util.getDate("dd/M/yyyy"));
 			List<Patrons> patrons = patronsService.getAll();
+			Random r = new Random();
+			int chooseTeam=r.nextBoolean() ? 1 : 2;
 			for (Movies movie : movies) {
 				if (transactionsRepository.findByMovieId(movie.getMovieId()).size() != patrons.size()) {
 					for (Patrons patron : patrons) {
@@ -326,8 +364,11 @@ public class TransactionsService {
 						if (transaction == null) {
 							transaction = new Transactions();
 							transaction.setMovieId(movie.getMovieId());
-							transaction.setFavorite(movie.getHero());
-							transaction.setTicket(5);
+							if(chooseTeam == 2)
+								transaction.setFavorite(movie.getHeroin());
+							else
+								transaction.setFavorite(movie.getHero());
+							transaction.setTicket(20);
 							transaction.setUsername(patron.getUsername());
 							transaction.setPassword(patron.getPassword());
 							System.out.println(save(transaction, true));
@@ -372,7 +413,6 @@ public class TransactionsService {
 				
 				bal.setFinalBal(ind);
 				balList.add(bal);
-		
 			}
 			System.out.println("******* Transactions Balnce :: "+ind+" :: *********** Patron Balance ::"+patron.getBalance());
 			patron.setBalance(ind);
@@ -411,5 +451,9 @@ public class TransactionsService {
 			res.put(key, sum);
 		}
 		return res;
+	}
+	
+	public List<Transactions> findByAwardIsNull(){
+		return transactionsRepository.findByAwardIsNull();
 	}
 }

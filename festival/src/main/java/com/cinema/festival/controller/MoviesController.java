@@ -26,8 +26,14 @@ public class MoviesController {
 	@Autowired
 	private MoviesService moviesService;
 	
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	
+	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public ArrayList<Movies> getAllMovies(){
+		return moviesService.getAllMovies();
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ArrayList<Movies> getAllMoviesFromTodaay(){
 		return moviesService.getAllMoviesFromTodaay();
 	}
 	

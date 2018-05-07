@@ -1,25 +1,23 @@
 package com.cinema.festival.util;
 
 import java.util.Date;
-import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.cinema.festival.service.TextLocalSMS;
 import com.cinema.festival.service.TransactionsService;
 
 @Component
 public class Schedular {
 	
-	@Autowired
-	private TextLocalSMS sms;
+	/*@Autowired
+	private TextLocalSMS sms;*/
 	
 	@Autowired
 	private TransactionsService transactionsService;
 	
-	@Scheduled(cron="0 00 13 * * *", zone="Asia/Calcutta")
+	/*@Scheduled(cron="0 00 13 * * *", zone="Asia/Calcutta")
 	public void sendAlertTL(){
 		try{
 			System.out.println("******************ALERT Schedular Triggered******************** :: "+ new Date());
@@ -37,7 +35,7 @@ public class Schedular {
 		}
 	}
 	
-/*	@Scheduled(cron="0 20 21 * * *", zone="Asia/Calcutta")
+	@Scheduled(cron="0 20 21 * * *", zone="Asia/Calcutta")
 	public void sendAlertM9(){
 		System.out.println("******************Schedular Triggered******************* :: "+ new Date());
 		Msg9Service msg9Service = new Msg9Service();

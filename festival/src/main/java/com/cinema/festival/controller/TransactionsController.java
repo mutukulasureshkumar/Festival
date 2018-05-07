@@ -2,6 +2,7 @@ package com.cinema.festival.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -96,5 +97,10 @@ public class TransactionsController {
 	@RequestMapping(value = "/balancebymatch", method = RequestMethod.GET)
 	public HashMap<String, Double> checkBalanceByMatch(){
 		return transactionsService.getBalnaceByMatch();
+	}
+	
+	@RequestMapping(value = "/byawardnull" ,method = RequestMethod.GET)
+	public List<Transactions> findByAwardIsNull(){
+		return transactionsService.findByAwardIsNull();
 	}
 }
