@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class FestivalApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FestivalApplication.class, args);
+	public static void main(String[] arg) {
+		SpringApplication.run(FestivalApplication.class, arg);
 	}
 }
