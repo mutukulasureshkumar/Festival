@@ -71,6 +71,8 @@ public class TransactionsService {
 		transactions.setDate_time(date);
 		transactions.setPatronId(patron.getPatronId());
 		transactions.setBalance(patron.getBalance());
+		if(transactions.getTicket()==100000)
+			transactions.setTicket(Math.abs((int)patron.getBalance()));
 
 		prevTransaction = transactionsRepository.findByPatronIdAndMovieId(patron.getPatronId(),
 				transactions.getMovieId());
@@ -235,6 +237,11 @@ public class TransactionsService {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH");
 		sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 		int current_time = Integer.parseInt(sdf.format(new Date().getTime()));
+		
+		SimpleDateFormat sdfm = new SimpleDateFormat("mm");
+		sdfm.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+		int current_min = Integer.parseInt(sdfm.format(new Date().getTime()));
+		
 		ArrayList<Movies> movieList = moviesService.getByDate(date);
 		for (Movies movie : movieList) {
 			ArrayList<Results> resList = new ArrayList<>();
@@ -259,6 +266,10 @@ public class TransactionsService {
 				System.out.println("************* current_time ************* :: "+ current_time);
 				if(current_time <= 13){
 					System.out.println("************* inside ************* (current_time <= 13) :: "+ (current_time <= 14));
+					if(current_time == 13 && current_min >= 55){
+						System.out.println("************* inside Min ************* (current_min) :: "+ (current_min));
+					}else{
+						System.out.println("************* outside Min ************* (current_min) :: "+ (current_min));
 						results.setFavorite("");
 						results.setTicket(0);
 						results.setBalance(0);
@@ -266,6 +277,7 @@ public class TransactionsService {
 						results.setHeroinRatio(0);
 						results.setHeroTotalAmount(0);
 						results.setHeroinTotalAmount(0);
+					}
 				}
 				resList.add(results);
 			}
@@ -311,7 +323,7 @@ public class TransactionsService {
 				results.setEarned(earned);
 				results.setBalance(patron.getBalance());
 				results.setAward(transactions.getAward());
-				// results.setPatron(patron.getUsername());
+				//results.setPatron(patron.getUsername());
 				results.setMovieDate(movie.getDate());
 				results.setTransactionDate(transactions.getDate_time());
 				results.setHeroRatio(ratio.getHeroRatio());
