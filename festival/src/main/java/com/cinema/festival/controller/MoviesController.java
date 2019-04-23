@@ -1,14 +1,12 @@
 package com.cinema.festival.controller;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
+import com.cinema.festival.model.Movies;
+import com.cinema.festival.service.MoviesService;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cinema.festival.model.Movies;
-import com.cinema.festival.service.MoviesService;
+import java.io.*;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping( value = "movies")
@@ -34,7 +34,7 @@ public class MoviesController {
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ArrayList<Movies> getAllMoviesFromTodaay(){
-		return moviesService.getAllMoviesFromTodaay();
+		return moviesService.getAllMovies();
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -52,38 +52,71 @@ public class MoviesController {
 		BufferedReader br = null;
 		FileReader fr = null;
 		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
 			ClassLoader classLoader = this.getClass().getClassLoader();
-	        File file = new File(classLoader.getResource("ipl.txt").getFile());
-			fr = new FileReader(file);
-			br = new BufferedReader(fr);
-			String sCurrentLine;
-			while ((sCurrentLine = br.readLine()) != null) {
-				System.out.println(sCurrentLine);
-				Movies movie =new Movies();
-				String[] splits=sCurrentLine.split("-");
-				String[] date=splits[0].split("/");
-				SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
-				int month;
-				if("April".equalsIgnoreCase(date[0]))
-					month=3;
-				else
-					month=4;
-				Calendar calendar = new GregorianCalendar(2018,month,Integer.parseInt(date[1]));
-				System.out.println(sdf.format(calendar.getTime()));
-				movie.setDate(sdf.format(calendar.getTime()));
-				String[] cast=splits[1].split(":");
-				movie.setHero(getFullName(cast[0]));
-				movie.setHeroin(getFullName(cast[1]));
-				if("8 p.m.".equalsIgnoreCase(splits[2]))
-					movie.setTime("20:00");
-				else
-					movie.setTime("16:00");
-				movie.setTheater(splits[3].toUpperCase());
+			File file = new File(classLoader.getResource("ipl.xlsx").getFile());
+			FileInputStream excelFile = new FileInputStream(file);
+			Workbook workbook = new XSSFWorkbook(excelFile);
+			Sheet datatypeSheet = workbook.getSheetAt(0);
+			Iterator<Row> iterator = datatypeSheet.iterator();
+			while (iterator.hasNext()) {
+				Row currentRow = iterator.next();
+				Iterator<Cell> cellIterator = currentRow.iterator();
+				Movies movie = new Movies();
+				while (cellIterator.hasNext()) {
+					Cell currentCell = cellIterator.next();
+					if (currentCell.getCellType() == currentCell.CELL_TYPE_STRING) {
+						if(currentCell.getColumnIndex() == 1){
+							String[] actres = currentCell.getStringCellValue().toUpperCase().split("VS");
+							if(actres.length == 2){
+								movie.setHero(actres[0]);
+								movie.setHeroin(actres[1]);
+							}
+						}
+						if(currentCell.getColumnIndex() == 2){
+							String[] dateMonthAndTime=null;
+							if(currentCell.getStringCellValue().contains("th")) {
+								dateMonthAndTime = currentCell.getStringCellValue().toUpperCase().split("TH");
+							}
+							if(currentCell.getStringCellValue().contains("rd")) {
+								dateMonthAndTime = currentCell.getStringCellValue().toUpperCase().split("RD");
+							}
+							if(currentCell.getStringCellValue().contains("st")) {
+								dateMonthAndTime = currentCell.getStringCellValue().toUpperCase().split("ST");
+							}
+							if(currentCell.getStringCellValue().contains("nd")) {
+								dateMonthAndTime = currentCell.getStringCellValue().toUpperCase().split("ND");
+							}
+							int date = Integer.parseInt(dateMonthAndTime[0]);
+							int year = 2019;
+							int month=0;
+							if(currentCell.getStringCellValue().toUpperCase().contains("MARCH"))
+								month=2;
+							if(currentCell.getStringCellValue().toUpperCase().contains("APRIL"))
+								month=3;
+							if(currentCell.getStringCellValue().toUpperCase().contains("MAY"))
+								month=4;
+							Calendar calendar = new GregorianCalendar(2019,month,date);
+							movie.setDate(sdf.format(calendar.getTime()));
+						}
+						if(currentCell.getColumnIndex() == 3){
+							if(currentCell.getStringCellValue().contains("8"))
+								movie.setTime("20:00");
+							else
+								movie.setTime("16:00");
+						}
+						if(currentCell.getColumnIndex() == 4){
+							movie.setTheater(currentCell.getStringCellValue());
+						}
+					}
+				}
 				moviesService.save(movie);
 			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
+		}finally {
 			try {
 				if (br != null)
 					br.close();
@@ -95,24 +128,4 @@ public class MoviesController {
 		}
 		return "Data Loaded in Database !!";
 	}
-	
-	public String getFullName(String name){
-		if("MI".equals(name))
-			return "MUMBAI";
-		else if("CSK".equals(name))
-			return "CHENNAI";
-		else if("DD".equals(name))
-			return "DELHI";
-		else if("KXIP".equals(name))
-			return "PUNJAB";
-		else if("KKR".equals(name))
-			return "KOLKATA";
-		else if("RCB".equals(name))
-			return "BANGALORE";
-		else if("SRH".equals(name))
-			return "HYDERABAD";
-		else
-			return "RAJASTHAN";
-	}
-
 }

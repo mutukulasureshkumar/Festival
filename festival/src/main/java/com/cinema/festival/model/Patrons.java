@@ -20,6 +20,7 @@ public class Patrons {
 	private String status;
 	private double balance;
 	private int role;
+	private double amount;
 	
 	public int getPatronId() {
 		return patronId;
@@ -68,5 +69,13 @@ public class Patrons {
 	}
 	public void setRole(int role) {
 		this.role = role;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(double amount) {
+		this.amount = amount;
 	}
 }

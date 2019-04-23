@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,8 @@ import com.cinema.festival.model.Results;
 import com.cinema.festival.model.Transactions;
 import com.cinema.festival.repository.TransactionsRepository;
 import com.cinema.festival.util.Util;
+
+import javax.naming.InsufficientResourcesException;
 
 @Service
 @Transactional 
@@ -36,33 +39,70 @@ public class TransactionsService {
 	private MoviesService moviesService;
 
 	@Transactional
-	public HashMap<Integer, ArrayList<Results>> save(Transactions transactions, boolean defaultGuess) {
+	public HashMap<Integer, ArrayList<Results>> save(Transactions transactions, boolean defaultGuess, boolean backend) {
 		Patrons patron = null;
 		Ratio ratio = null;
 		Movies movie = null;
 		Transactions prevTransaction = null;
+
+		if(transactions.getTicket() == 0 || transactions.getFavorite() == null || transactions.getFavorite().trim()==""){
+			throw new IllegalAccessError("Please try again");
+		}
 
 		/*** Validating patron */
 		patron = patronsService.getPatron(transactions.getUsername(), transactions.getPassword());
 		if (patron == null)
 			throw new BadCredentialsException("username and password are not matched!!");
 
+		/*** Validating minimum Points*/
+		if(!defaultGuess){
+            if(transactions.getTicket() < 20){
+                if(patron.getPatronId() < 12){
+                    throw new IllegalAccessError("Error :: Minimum ticket value should be 20");
+                }else{
+                    if(transactions.getTicket() < 10){
+                        throw new IllegalAccessError("Error :: Minimum ticket value should be 10");
+                    }
+                }
+            }
+        }
+
+		/*** Validating balance */
+		int remainingBalance=0;
+		try{
+			remainingBalance = transactionsRepository.getRemainingBalace(patron.getPatronId());
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		if((patron.getBalance() - remainingBalance) < transactions.getTicket()){
+			throw new IllegalAccessError("Low Balance!!");
+		}
+
 		/** Retrieving the movie details */
 		movie = moviesService.getMovieByMovieId(transactions.getMovieId());
 
+		try{
+			Date movieDate=new SimpleDateFormat("dd/MM/yyyy").parse(movie.getDate());
+			Date currentDate=new SimpleDateFormat("dd/MM/yyyy").parse(Util.getDate("dd/M/yyyy"));
+
+			if(movieDate.before(currentDate)){
+				throw new IllegalAccessError("Cannot able to point for previous movie!!");
+			}
+
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+
+
 		/*** Validating current date guess time */
 		String date = Util.getDate("dd/M/yyyy");
-		System.out.println(
-				"****************************************************************************************** date :: "
-						+ date);
+		System.out.println("***************************************** date :: "+ date);
 		if (date.compareTo(movie.getDate()) == 0) {
 			SimpleDateFormat sdf = new SimpleDateFormat("HH");
 			sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 			int current_time = Integer.parseInt(sdf.format(new Date().getTime()));
-			System.out.println(
-					"***************************************************************************************** time :: "
-							+ current_time);
-			if (current_time >= 14 && !defaultGuess)
+			System.out.println("************************************* time :: "+ current_time);
+			if (current_time >= 14 && !defaultGuess && !backend)
 				throw new IllegalAccessError("Guess is not allowed after 2 PM !!");
 		}
 
@@ -116,6 +156,7 @@ public class TransactionsService {
 					ratio.setHeroRatio(ratio.getHeroinTotalTickets() / ratio.getHeroTotalTickets());
 			}
 		}
+		transactions.setAward("TBD");
 		transactionsRepository.save(transactions);
 		ratioService.save(ratio);
 		return getCurrentDateMovies();
@@ -158,7 +199,7 @@ public class TransactionsService {
 				transaction.setBalance(0);
 				patron.setBalance(patron.getBalance() + transaction.getTicket());
 			}
-			transaction.setAward(null);
+			transaction.setAward("TBD");
 			transactionsRepository.save(transaction);
 			patronsService.update(patron);
 		}
@@ -266,9 +307,9 @@ public class TransactionsService {
 				System.out.println("************* current_time ************* :: "+ current_time);
 				if(current_time <= 13){
 					System.out.println("************* inside ************* (current_time <= 13) :: "+ (current_time <= 14));
-					if(current_time == 13 && current_min >= 55){
+		/*			if(current_time == 13 && current_min >= 59){
 						System.out.println("************* inside Min ************* (current_min) :: "+ (current_min));
-					}else{
+					}else{*/
 						System.out.println("************* outside Min ************* (current_min) :: "+ (current_min));
 						results.setFavorite("");
 						results.setTicket(0);
@@ -277,7 +318,7 @@ public class TransactionsService {
 						results.setHeroinRatio(0);
 						results.setHeroTotalAmount(0);
 						results.setHeroinTotalAmount(0);
-					}
+					//}
 				}
 				resList.add(results);
 			}
@@ -342,6 +383,7 @@ public class TransactionsService {
 						results.setHeroinRatio(0);
 						results.setHeroTotalAmount(0);
 						results.setHeroinTotalAmount(0);
+						results.setEarned(0);
 					}
 				}
 				resultsList.add(results);
@@ -376,14 +418,17 @@ public class TransactionsService {
 						if (transaction == null) {
 							transaction = new Transactions();
 							transaction.setMovieId(movie.getMovieId());
-							if(chooseTeam == 2)
+							/*if(chooseTeam == 2)
 								transaction.setFavorite(movie.getHeroin());
 							else
-								transaction.setFavorite(movie.getHero());
+								transaction.setFavorite(movie.getHero());*/
+							transaction.setFavorite(movie.getHeroin());
 							transaction.setTicket(20);
 							transaction.setUsername(patron.getUsername());
 							transaction.setPassword(patron.getPassword());
-							System.out.println(save(transaction, true));
+							if(patron.getBalance()>=20){
+								System.out.println(save(transaction, true, false));
+							}
 						}
 					}
 				}

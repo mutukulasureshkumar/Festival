@@ -34,7 +34,13 @@ public class TransactionsController {
 	@RequestMapping(method = RequestMethod.POST)
 	public HashMap<Integer, ArrayList<Results>> save(@RequestBody  Transactions transactions){
 		System.out.println("***LOG INFO*** :: "+transactions.toString());
-		return transactionsService.save(transactions, false);
+		return transactionsService.save(transactions, false, false);
+	}
+
+	@RequestMapping(value = "/bybackend" ,method = RequestMethod.POST)
+	public HashMap<Integer, ArrayList<Results>> saveFromBackend(@RequestBody  Transactions transactions){
+		System.out.println("***LOG INFO*** :: "+transactions.toString());
+		return transactionsService.save(transactions, false, true);
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT)

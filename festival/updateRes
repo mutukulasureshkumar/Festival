@@ -1,0 +1,39 @@
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =1)) where patron_id =1;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =2)) where patron_id =2;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =3)) where patron_id =3;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =4)) where patron_id =4;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =5)) where patron_id =5;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =6)) where patron_id =6;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =7)) where patron_id =7;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =8)) where patron_id =8;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =9)) where patron_id =9;
+update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =12)) where patron_id =12;
+
+
+update patrons set balance = (balance+(20*0.285)) where patron_id =1;
+update patrons set balance = (balance+(10*0.285)) where patron_id =2;
+update patrons set balance = (balance+(10*0.285)) where patron_id =7;
+update patrons set balance = (balance+(20*0.285)) where patron_id =8;
+update patrons set balance = (balance+(5*0.285)) where patron_id =9;
+update patrons set balance = (balance+(10*0.285)) where patron_id =12;
+update patrons set balance = (balance+(5*0.285)) where patron_id =22;
+
+
+
+update patrons set balance = (balance+15) where patron_id =3;
+update patrons set balance = (balance+5) where patron_id =22;
+update patrons set balance = (balance+20) where patron_id =6;
+update patrons set balance = (balance+10) where patron_id =4;
+
+update patrons set balance = (balance+(15*1.9)) where patron_id =3;
+update patrons set balance = (balance+(5*1.9)) where patron_id =22;
+update patrons set balance = (balance+(20*1.9)) where patron_id =6;
+update patrons set balance = (balance+(10*1.9)) where patron_id =4;
+
+update transactions set balance = 15 where patron_id =3 and movie_id=617;
+update transactions set balance = 5 where patron_id =22 and movie_id=617;
+update transactions set balance = 20 where patron_id =6 and movie_id=617;
+update transaations set balance = 10 where patron_id =4 and movie_id=617;
+
+
+

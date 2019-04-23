@@ -1,9 +1,9 @@
 applications:
   - name: festival
-    path: target/festival-0.0.1-SNAPSHOT.jar
+    path: target/festival-0.0.2-SNAPSHOT.jar
     memory: 1G
     env:
       JAVA_OPTS: -Djava.security.egd=file:/dev/./urandom
       SPRING_PROFILES_ACTIVE: cloud
     services:
-      - cinema
+      - cinema1

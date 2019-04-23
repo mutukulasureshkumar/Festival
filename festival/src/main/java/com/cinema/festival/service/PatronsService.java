@@ -22,6 +22,13 @@ public class PatronsService {
 		String date = Util.getDate("dd/M/yyyy  hh:mm:ss");
 		patrons.setDate_time(date);
 		patrons.setStatus("ACTIVE");
+		if(patrons.getPatronId() > 0){
+			Patrons oldPatrons = getPatron(patrons.getPatronId());
+			if(oldPatrons != null){
+				patrons.setAmount(patrons.getAmount()+oldPatrons.getAmount());
+				patrons.setBalance(patrons.getBalance()+oldPatrons.getBalance());
+			}
+		}
 		return patronRepository.save(patrons);
 	}
 	
@@ -52,5 +59,19 @@ public class PatronsService {
 			sum=sum+patron.getBalance();
 		}
 		return sum;
+	}
+
+	public Patrons updateBalance(String username, double balance){
+		Patrons patrons = new Patrons();
+		patrons = patronRepository.findByUsername(username);
+		System.out.print("Requested for update the balance by :: "+username+", of amount :: "+balance+". Previous balance :: "+patrons.getBalance()+". Updated Balace :: "+(patrons.getBalance()+balance)+". ");
+		patrons.setBalance(patrons.getBalance()+balance);
+		Patrons updatedPatron = patronRepository.save(patrons);
+		if(updatedPatron != null){
+			System.out.println("Transaction is Successfull!!!");
+		}else{
+			System.out.println("Transaction is Failed!!!");
+		}
+		return updatedPatron;
 	}
 }

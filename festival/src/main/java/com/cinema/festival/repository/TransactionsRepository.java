@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.cinema.festival.model.Transactions;
@@ -19,4 +20,6 @@ public interface TransactionsRepository  extends JpaRepository<Transactions, Int
 	public List<Transactions> findByPatronIdAndMovieIdNotIn(int patronId,Collection<Integer> ids);
 	public void deleteByMovieId(int movie_id);
 	public List<Transactions> findByAwardIsNull();
+	@Query(value = "SELECT SUM(ticket) FROM Transactions WHERE award = 'TBD' AND patronId = :patronId")
+	public int getRemainingBalace(int patronId);
 }

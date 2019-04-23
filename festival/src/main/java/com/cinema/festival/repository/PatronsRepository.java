@@ -10,4 +10,5 @@ import com.cinema.festival.model.Patrons;
 public interface PatronsRepository extends JpaRepository<Patrons, Integer>{
 	public Patrons findByUsernameAndPassword(String username, String password);
 	public Patrons findByPatronId(int patron_id);
+	public Patrons findByUsername(String username);
 }
