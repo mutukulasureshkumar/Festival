@@ -10,15 +10,17 @@ update patrons set balance = (200+(select sum(balance) from transactions where a
 update patrons set balance = (200+(select sum(balance) from transactions where award != 'TBD' and patron_id =12)) where patron_id =12;
 
 
-update patrons set balance = (balance+(20*0.285)) where patron_id =1;
-update patrons set balance = (balance+(10*0.285)) where patron_id =2;
-update patrons set balance = (balance+(10*0.285)) where patron_id =7;
-update patrons set balance = (balance+(20*0.285)) where patron_id =8;
-update patrons set balance = (balance+(5*0.285)) where patron_id =9;
-update patrons set balance = (balance+(10*0.285)) where patron_id =12;
-update patrons set balance = (balance+(5*0.285)) where patron_id =22;
-
-
+update patrons set balance = 149.5 , amount =200 where patron_id =1;
+update patrons set balance = 61.9 , amount =200 where patron_id =2;
+update patrons set balance = 601.8 , amount =200 where patron_id =3;
+update patrons set balance = 198.85 , amount =200 where patron_id =4;
+update patrons set balance = 11.15 , amount =200 where patron_id =5;
+update patrons set balance = 137.85 , amount =200 where patron_id =6;
+update patrons set balance = 65.75 , amount =200 where patron_id =7;
+update patrons set balance = 593.8 , amount =200 where patron_id =8;
+update patrons set balance = 46.85 , amount =200 where patron_id =9;
+update patrons set balance = 4.55 , amount =200 where patron_id =12;
+update patrons set balance = 4.85 , amount =200 where patron_id =22;
 
 update patrons set balance = (balance+15) where patron_id =3;
 update patrons set balance = (balance+5) where patron_id =22;

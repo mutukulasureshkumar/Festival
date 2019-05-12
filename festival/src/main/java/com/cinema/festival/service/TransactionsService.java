@@ -44,6 +44,8 @@ public class TransactionsService {
 		Ratio ratio = null;
 		Movies movie = null;
 		Transactions prevTransaction = null;
+		int transactionTime = 14;
+		int displayTime = 2;
 
 		if(transactions.getTicket() == 0 || transactions.getFavorite() == null || transactions.getFavorite().trim()==""){
 			throw new IllegalAccessError("Please try again");
@@ -56,9 +58,9 @@ public class TransactionsService {
 
 		/*** Validating minimum Points*/
 		if(!defaultGuess){
-            if(transactions.getTicket() < 20){
+            if(transactions.getTicket() < 50){
                 if(patron.getPatronId() < 12){
-                    throw new IllegalAccessError("Error :: Minimum ticket value should be 20");
+                    throw new IllegalAccessError("Error :: Minimum ticket value should be 50");
                 }else{
                     if(transactions.getTicket() < 10){
                         throw new IllegalAccessError("Error :: Minimum ticket value should be 10");
@@ -93,6 +95,10 @@ public class TransactionsService {
 			e.printStackTrace();
 		}
 
+		if(movie.getMovieId() >= 492) {
+			transactionTime = 18;
+			displayTime = 6;
+		}
 
 		/*** Validating current date guess time */
 		String date = Util.getDate("dd/M/yyyy");
@@ -102,8 +108,8 @@ public class TransactionsService {
 			sdf.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 			int current_time = Integer.parseInt(sdf.format(new Date().getTime()));
 			System.out.println("************************************* time :: "+ current_time);
-			if (current_time >= 14 && !defaultGuess && !backend)
-				throw new IllegalAccessError("Guess is not allowed after 2 PM !!");
+			if (current_time >= transactionTime && !defaultGuess && !backend)
+				throw new IllegalAccessError("Guess is not allowed after "+displayTime+" PM !!");
 		}
 
 		/** Setting data in transaction table */
@@ -282,9 +288,12 @@ public class TransactionsService {
 		SimpleDateFormat sdfm = new SimpleDateFormat("mm");
 		sdfm.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 		int current_min = Integer.parseInt(sdfm.format(new Date().getTime()));
-		
+
+		int hideTime = 13;
 		ArrayList<Movies> movieList = moviesService.getByDate(date);
 		for (Movies movie : movieList) {
+			if(movie.getMovieId() >= 492)
+				hideTime = 17;
 			ArrayList<Results> resList = new ArrayList<>();
 			ArrayList<Transactions> transList = (ArrayList<Transactions>) transactionsRepository
 					.findByMovieId(movie.getMovieId());
@@ -305,7 +314,7 @@ public class TransactionsService {
 				results.setHeroTotalAmount(ratio.getHeroTotalTickets());
 				results.setHeroinTotalAmount(ratio.getHeroinTotalTickets());
 				System.out.println("************* current_time ************* :: "+ current_time);
-				if(current_time <= 13){
+				if(current_time <= hideTime){
 					System.out.println("************* inside ************* (current_time <= 13) :: "+ (current_time <= 14));
 		/*			if(current_time == 13 && current_min >= 59){
 						System.out.println("************* inside Min ************* (current_min) :: "+ (current_min));
@@ -412,23 +421,30 @@ public class TransactionsService {
 			for (Movies movie : movies) {
 				if (transactionsRepository.findByMovieId(movie.getMovieId()).size() != patrons.size()) {
 					for (Patrons patron : patrons) {
-						Transactions transaction = null;
-						transaction = transactionsRepository.findByPatronIdAndMovieId(patron.getPatronId(),
-								movie.getMovieId());
-						if (transaction == null) {
-							transaction = new Transactions();
-							transaction.setMovieId(movie.getMovieId());
+						try{
+							Transactions transaction = null;
+							transaction = transactionsRepository.findByPatronIdAndMovieId(patron.getPatronId(),
+									movie.getMovieId());
+							if (transaction == null) {
+								transaction = new Transactions();
+								transaction.setMovieId(movie.getMovieId());
 							/*if(chooseTeam == 2)
 								transaction.setFavorite(movie.getHeroin());
 							else
 								transaction.setFavorite(movie.getHero());*/
-							transaction.setFavorite(movie.getHeroin());
-							transaction.setTicket(20);
-							transaction.setUsername(patron.getUsername());
-							transaction.setPassword(patron.getPassword());
-							if(patron.getBalance()>=20){
-								System.out.println(save(transaction, true, false));
+								transaction.setFavorite(movie.getHeroin());
+								transaction.setTicket(50);
+								transaction.setUsername(patron.getUsername());
+								transaction.setPassword(patron.getPassword());
+								if(patron.getBalance()>=50){
+									System.out.println(save(transaction, true, false));
+								}else{
+									transaction.setTicket(Math.abs((int)patron.getBalance()));
+									System.out.println(save(transaction, true, false));
+								}
 							}
+						}catch(Exception e){
+							e.printStackTrace();
 						}
 					}
 				}

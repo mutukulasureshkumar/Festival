@@ -43,7 +43,7 @@ public class Schedular {
 	}*/
 	
 
-	@Scheduled(cron="0 0 14 * * *", zone="Asia/Calcutta")
+	@Scheduled(cron="0 0 18 * * *", zone="Asia/Calcutta")
 	public void defaultGuess(){
 		System.out.println("******************DEFAULT Schedular Triggered******************* :: "+ new Date());
 		try{
